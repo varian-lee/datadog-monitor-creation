@@ -39,13 +39,18 @@ message = """
   GMT - {{local_time 'last_triggered_at' 'Africa/Abidjan'}}
   {{#is_match "host.region" "ap-northeast-2"}}KIC-{{local_time 'last_triggered_at' 'Asia/Seoul'}}{{/is_match}}{{#is_match "host.region" "us-west-2"}}AIC-{{local_time 'last_triggered_at' 'America/Los_Angeles'}}{{/is_match}}{{#is_match "host.region" "eu-west-1"}}EIC-{{local_time 'last_triggered_at' 'Europe/Dublin'}}{{/is_match}}{{#is_match "host.region" "ruc"}}RUC-{{local_time 'last_triggered_at' 'Europe/Moscow'}}{{/is_match}}{{^is_match "host.region" "ruc" "ap-northeast-2" "us-west-2" "eu-west-1"}}UTC-{{local_time 'last_triggered_at' 'Etc/UTC'}}{{/is_match}}
 
-@teams-infra_common 
+{{#is_match "host.account_name" ""}}
+  @teams-infra_common
+{{else}}
+  @teams-{{host.account_name}}_all 
+{{/is_match}}
+
 {{/is_alert}}
 """
 
 # 메인이 되는 함수 - CSV 파일의 모니터 내용을 Datadog Monitor 와 Sync 하도록 설정
 # csv에 포함된 내용대로 모니터 생성 및 업데이트
-# csv에 포함되지 않은 모니터는 삭제됨 (CSV 내용과 동기화를 위해)
+# tag값이 automatically_created:true 인 모니터 중에, csv에 포함되지 않은 경우는 삭제됨 (CSV 내용과 동기화를 위해)
 def sync_monitors_with_csv(file_path):
     csv_monitors = get_target_monitors_from_csv(file_path)
     if csv_monitors == None:
