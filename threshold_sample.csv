@@ -1,0 +1,13 @@
+﻿Account_Name,pluginset_name,display_name,critical,warning,Instances_InstanceId,host_name,ipaddress
+TEST_ACCOUNT,cpu,cpu,90,70,i-0b850b3956bc08ad2,bootcamp-lab,10.10.10.10
+TEST_ACCOUNT,memory,memory,95,85,i-0b850b3956bc08ad2,bootcamp-lab,10.10.10.10
+TEST_ACCOUNT,Disk usage,/dev/nvme0n1p1,80,70,i-0b850b3956bc08ad2,bootcamp-lab,10.10.10.10
+TEST_ACCOUNT,Disk usage,overlay,95,85,i-0b850b3956bc08ad2,bootcamp-lab,10.10.10.10
+TEST_ACCOUNT,Disk usage,shm,95,85,i-0b850b3956bc08ad2,bootcamp-lab,10.10.10.10
+TEST_ACCOUNT,Disk usage,tmpfs,95,85,i-0b850b3956bc08ad2,bootcamp-lab,10.10.10.10
+TEST_ACCOUNT,iowait,iowait,60,50,i-0b850b3956bc08ad2,bootcamp-lab,10.10.10.10
+TEST_ACCOUNT,Disk usage,tmpfs,88,78,i-1111,bootcamp2-lab,10.10.10.12
+TEST_ACCOUNT,iowait,iowait,60,50,i-1111,bootcamp2-lab,10.10.10.12
+TEST_ACCOUNT,Disk usage,overlay,87,77,i-1111,bootcamp2-lab,10.10.10.12
+TEST_ACCOUNT,Disk usage,overlay,88,78,i-2222,bootcamp3-lab,10.10.10.13
+TEST_ACCOUNT,Disk usage,overlay,60,59,i-3333,bootcamp4-lab,10.10.10.14
