@@ -25,7 +25,7 @@ configuration.verify_ssl = False
 urllib3.disable_warnings()
 
 # CSV 파일 경로
-CSV_FILE = "threshold_sample.csv"
+CSV_FILE = "LGE_WITH_GSN.csv"
 
 # Monitor Message 설정
 message = """
@@ -100,32 +100,32 @@ def create_csv_monitors(df):
         instance_id = row["Instances_InstanceId"].strip()
         host_name = row["host_name"].strip()
 
-        key = (account_name, pluginset_name, display_name, critical, warning)
+        key = (pluginset_name, display_name, critical, warning)
         grouped_data[key]["instances"].append(instance_id)
         grouped_data[key]["hosts"].append(host_name)
         
     # 모니터 그룹별로 - 스레숄드 설정 및 모니터 이름 설정
-    for (account_name, pluginset_name, display_name, critical, warning), data in grouped_data.items():
-        hosts = " OR ".join([f"host:{host}" for host in data["hosts"]])
+    for (pluginset_name, display_name, critical, warning), data in grouped_data.items():
+        hosts = " OR ".join([f"name:{host}" for host in data["hosts"]])
         hosts_or = f"({hosts})"
 
         # tag 에 필요한 정보를 넣을 수 있음. automatically_created:true 를 넣어, 삭제 시 활용
-        tags=[f"account_name:{account_name}",f"pluginset_name:{pluginset_name}","automatically_created:true"]
+        tags=[f"pluginset_name:{pluginset_name}","automatically_created:true","category:host"]
 
         if pluginset_name == "cpu":
-            monitor_name = f"{account_name} - CPU Usage - {critical}, {warning}"
-            query = f"avg(last_5m):100 - avg:system.cpu.idle{{NOT kube_node:* AND {hosts_or}}} by {{host}} > {critical}"
+            monitor_name = f"[Infra][Host] CPU 사용률 이상 알람 - {critical}, {warning}"
+            query = f"avg(last_5m):100 - avg:system.cpu.idle{{NOT kube_node:* AND {hosts_or}}} by {{name}} > {critical}"
         elif pluginset_name == "memory":
-            monitor_name = f"{account_name} - Memory Usage - {critical}, {warning}"
-            query = f"avg(last_5m):avg:system.mem.usable{{NOT kube_node:* AND {hosts_or}}} by {{host}} / avg:system.mem.total{{NOT kube_node:* AND {hosts_or}}} by {{host}} * 100 > {critical}"
+            monitor_name = f"[Infra][Host] Memory 사용률 이상 알람 - {critical}, {warning}"
+            query = f"avg(last_5m):avg:system.mem.usable{{NOT kube_node:* AND {hosts_or}}} by {{name}} / avg:system.mem.total{{NOT kube_node:* AND {hosts_or}}} by {{name}} * 100 > {critical}"
         elif pluginset_name == "iowait":
-            monitor_name = f"{account_name} - IO Wait - {critical}, {warning}"
-            query = f"avg(last_5m):avg:system.cpu.iowait{{NOT kube_node:* AND {hosts_or}}} by {{host}} > {critical}"
+            monitor_name = f"[Infra][Host] IO Wait 이상 알람 - {critical}, {warning}"
+            query = f"avg(last_5m):avg:system.cpu.iowait{{NOT kube_node:* AND {hosts_or}}} by {{name}} > {critical}"
         elif pluginset_name == "Disk usage":
-            monitor_name = f"{account_name} - Disk Usage ({display_name}) - {critical}, {warning}"
+            monitor_name = f"[Infra][Host] Disk 사용률 이상 알람 ({display_name}) - {critical}, {warning}"
             critical = critical / 100
             warning = warning / 100
-            query = f"avg(last_5m):system.disk.in_use{{NOT kube_node:* AND {hosts_or} AND device:{display_name}}} by {{host}} > {critical}"
+            query = f"avg(last_5m):system.disk.in_use{{NOT kube_node:* AND {hosts_or} AND device:{display_name}}} by {{name}} > {critical}"
         else:
             print(f"Unsupported pluginset_name: {pluginset_name}")
             continue
@@ -136,8 +136,8 @@ def create_csv_monitors(df):
             thresholds = MonitorThresholds(critical=critical, warning=warning)
         options = MonitorOptions(
             thresholds=thresholds,
-            notify_no_data=True,
-            no_data_timeframe=20
+            # notify_no_data=True,
+            # no_data_timeframe=20
         )
 
         csv_monitors[monitor_name] = {"query": query, "options": options, "tags": tags}
