@@ -32,17 +32,19 @@ message = """
 {{#is_alert}}
 - Account명 : {{host.account_name}}
 - Region명 : {{host.region}}
+- Service명 : {{host.service}}
 - Host명 : {{host.name_tag}}
 - 현재 사용량 : {{eval "round(value, 1)"}}
 - Alert 임계치 : {{threshold}}
 - 알람 발생 시간 : 
-  GMT - {{local_time 'last_triggered_at' 'Africa/Abidjan'}}
+  GMT-{{local_time 'last_triggered_at' 'Africa/Abidjan'}}
   {{#is_match "host.region" "ap-northeast-2"}}KIC-{{local_time 'last_triggered_at' 'Asia/Seoul'}}{{/is_match}}{{#is_match "host.region" "us-west-2"}}AIC-{{local_time 'last_triggered_at' 'America/Los_Angeles'}}{{/is_match}}{{#is_match "host.region" "eu-west-1"}}EIC-{{local_time 'last_triggered_at' 'Europe/Dublin'}}{{/is_match}}{{#is_match "host.region" "ruc"}}RUC-{{local_time 'last_triggered_at' 'Europe/Moscow'}}{{/is_match}}{{^is_match "host.region" "ruc" "ap-northeast-2" "us-west-2" "eu-west-1"}}UTC-{{local_time 'last_triggered_at' 'Etc/UTC'}}{{/is_match}}
 
 {{^is_match "host.account_name" ""}}
   @teams-infra_common
 {{else}}
-  @teams-{{host.account_name}}_all 
+  @teams-{{host.account_name}}_ec2
+  @teams-{{host.account_name}}_{{host.service}}
 {{/is_match}}
 
 {{/is_alert}}
