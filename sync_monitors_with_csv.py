@@ -44,7 +44,7 @@ message = """
   @teams-infra_common
 {{else}}
   @teams-{{host.account_name}}_ec2
-  @teams-{{host.account_name}}_{{host.service}}
+  @teams-{{host.service}}
 {{/is_match}}
 
 {{/is_alert}}
